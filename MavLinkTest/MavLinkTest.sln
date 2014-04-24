@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MavLinkTest", "MavLinkTest\MavLinkTest.csproj", "{96484535-A8B6-4473-A119-2FDF30D414F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MavLink", "MavLink\MavLink.csproj", "{B166A8B2-1D55-4DCB-9F07-CECDFED2ACDB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{219697C3-A6BF-4211-B837-F2E917B612DA} = {219697C3-A6BF-4211-B837-F2E917B612DA}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{96F162C8-8F01-4585-B1F3-AC227348D502}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Comms", "Comms\Comms.csproj", "{219697C3-A6BF-4211-B837-F2E917B612DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96484535-A8B6-4473-A119-2FDF30D414F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96484535-A8B6-4473-A119-2FDF30D414F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96484535-A8B6-4473-A119-2FDF30D414F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96484535-A8B6-4473-A119-2FDF30D414F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B166A8B2-1D55-4DCB-9F07-CECDFED2ACDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B166A8B2-1D55-4DCB-9F07-CECDFED2ACDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B166A8B2-1D55-4DCB-9F07-CECDFED2ACDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B166A8B2-1D55-4DCB-9F07-CECDFED2ACDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219697C3-A6BF-4211-B837-F2E917B612DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219697C3-A6BF-4211-B837-F2E917B612DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219697C3-A6BF-4211-B837-F2E917B612DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219697C3-A6BF-4211-B837-F2E917B612DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
