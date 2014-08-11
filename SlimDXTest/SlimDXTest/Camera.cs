@@ -12,7 +12,7 @@ namespace SlimDXTest
 {
     public delegate void FrameCompleteEventHandler(ref Texture texture, float fps);
 
-    class Camera : ISampleGrabberCB, IDisposable
+    class WebCamera : ICamera, ISampleGrabberCB, IDisposable
     {
         public event FrameCompleteEventHandler FrameComplete;
 
@@ -32,7 +32,7 @@ namespace SlimDXTest
         private int countElapsed = 0;
         private float _fps = 0f;
 
-        public Camera(DsDevice device, Device d3dDevice)
+        public WebCamera(DsDevice device, Device d3dDevice)
         {
             //bitmapWindow = new Test();
             //bitmapWindow.Show();
@@ -291,9 +291,5 @@ namespace SlimDXTest
         }
     }
 
-    public class FrameCompleteEventArgs : EventArgs
-    {
-        public IntPtr buffer;
-        public int length;
-    }
+    
 }

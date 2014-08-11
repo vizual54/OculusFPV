@@ -44,7 +44,6 @@ float distortionScale(float2 offset)
 
 float4 RiftPS(float2 tc : TEXCOORD0) : COLOR
 {
-	return tex2D(TexMap, tc);
 	float2 newtc = textureCoordsToDistortionOffsetCoords(tc);
 	newtc.x *= distortionScale(newtc);
 	newtc.y *= distortionScale(newtc);

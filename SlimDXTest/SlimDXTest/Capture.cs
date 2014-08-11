@@ -11,36 +11,70 @@ namespace SlimDXTest
 
     class Capture
     {
-        public Camera m_leftCamera = null;
-        public Camera m_rightCamera = null;
+        public ICamera m_leftCamera = null;
+        public ICamera m_rightCamera = null;
+        public ICameraStream streamCamera = null;
+
+        public Capture(string cameraStream, bool steroStream, Device d3dDevice)
+        {
+            if (steroStream)
+            {
+                streamCamera = new StreamingCamera(cameraStream, d3dDevice, 2);
+            }
+            else
+            {
+                streamCamera = new StreamingCamera(cameraStream, d3dDevice, 1);
+            }
+        }
 
         public Capture(string leftCamera, string rightCamera, Device d3dDevice)
         {
-            DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
-            
-            foreach(var device in systemCamereas)
+            if (leftCamera.ToLower().StartsWith("udp://"))
             {
-                if (device.DevicePath.Equals(leftCamera))
+                
+                if (rightCamera != "" && rightCamera.ToLower().StartsWith("udp://"))
                 {
-                    m_leftCamera = new Camera(device, d3dDevice);
-                }
-                if (device.DevicePath.Equals(rightCamera))
-                {
-                    m_rightCamera = new Camera(device, d3dDevice);
+                    m_rightCamera = new StreamingCamera(rightCamera, d3dDevice, 1);
                 }
             }
+            else
+            {
+                DsDevice[] systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
+
+                foreach (var device in systemCamereas)
+                {
+                    if (device.DevicePath.Equals(leftCamera))
+                    {
+                        if (device.Name.ToLower().StartsWith("hauppauge"))
+                        {
+                            m_leftCamera = new AnalogCamera(device, d3dDevice);
+                        }
+                        else
+                        {
+                            m_leftCamera = new WebCamera(device, d3dDevice);
+                        }
+                    }
+                    if (device.DevicePath.Equals(rightCamera))
+                    {
+                        m_rightCamera = new WebCamera(device, d3dDevice);
+                    }
+                }
+            }   
         }
 
         public void startCameras()
         {
             try
             {
-                m_leftCamera.StartCapture();
-                m_rightCamera.StartCapture();
+                if (streamCamera != null)
+                    streamCamera.StartCapture();
+                if (m_leftCamera != null)
+                    m_leftCamera.StartCapture();
+                if (m_rightCamera != null)
+                    m_rightCamera.StartCapture();
             }
             catch (Exception)
             {
-                
                 throw;
             }
         }

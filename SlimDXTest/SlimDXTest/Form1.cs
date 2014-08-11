@@ -23,12 +23,23 @@ namespace SlimDXTest
             CameraSelection cameraSelection = new CameraSelection();
             cameraSelection.ShowDialog();
 
-            renderer = new Renderer(this.pictureBox1, cameraSelection.Fullscreen);
-            capture = new Capture(cameraSelection.LeftDevice, cameraSelection.RightDevice, renderer.D3DDevice);
+            renderer = new Renderer(this.pictureBox1, cameraSelection.Fullscreen, cameraSelection.ShaderMethod);
 
-            capture.m_leftCamera.FrameComplete += new FrameCompleteEventHandler(renderer.OnLeftFrameComplete);
-            capture.m_rightCamera.FrameComplete += new FrameCompleteEventHandler(renderer.OnRightFrameComplete);
-            
+            if (cameraSelection.StreamAddress != "")
+            {
+                capture = new Capture(cameraSelection.StreamAddress, cameraSelection.StereoStream, renderer.D3DDevice);
+                capture.streamCamera.FrameComplete += new FrameCompleteEventHandler(renderer.OnLeftFrameComplete);
+                if (cameraSelection.StereoStream)
+                    capture.streamCamera.FrameComplete2 += new FrameCompleteEventHandler(renderer.OnRightFrameComplete);
+            }
+            else
+            {
+                capture = new Capture(cameraSelection.LeftDevice, cameraSelection.RightDevice, renderer.D3DDevice);
+                capture.m_leftCamera.FrameComplete += new FrameCompleteEventHandler(renderer.OnLeftFrameComplete);
+                if (capture.m_rightCamera != null)
+                    capture.m_rightCamera.FrameComplete += new FrameCompleteEventHandler(renderer.OnRightFrameComplete);
+            }
+
             MessagePump.Run(this, () =>
             {
                 renderer.Render();

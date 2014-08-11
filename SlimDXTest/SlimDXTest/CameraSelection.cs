@@ -16,9 +16,23 @@ namespace SlimDXTest
         private DsDevice[] systemCamereas;
         private string leftDevice = "";
         private string rightDevice = "";
+        private string streamAddress = "";
+        private bool stereoStream = false;
         private string shaderMethod = "";
         private List<String> shaderMethods;
         public bool Fullscreen { get; private set; }
+
+        public string StreamAddress
+        {
+            get { return streamAddress; }
+            private set { streamAddress = value; }
+        }
+
+        public bool StereoStream
+        {
+            get { return stereoStream; }
+            private set { stereoStream = value; }
+        }
 
         public String LeftDevice
         {
@@ -45,16 +59,22 @@ namespace SlimDXTest
             systemCamereas = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
             for (int i = 0; i < systemCamereas.Length; i++)
             {
-                leftCameraSelector.Items.Add(systemCamereas[i].DevicePath);
-                rightCameraSelector.Items.Add(systemCamereas[i].DevicePath);
+                leftCameraSelector.Items.Add(systemCamereas[i].Name);
+                rightCameraSelector.Items.Add(systemCamereas[i].Name);
             }
-            shaderMethods = new List<String>();
 
+            shaderMethods = new List<String>();
+            shaderCombox.Items.Add("Single");
+            shaderMethods.Add("None");
             shaderCombox.Items.Add("Oculus Rift");
-            shaderMethods.Add("Oculus Rift");
+            shaderMethods.Add("Oculus");
             shaderCombox.Items.Add("3D TV");
-            shaderMethods.Add("3D TV");
+            shaderMethods.Add("3DTV");
             shaderCombox.SelectedIndex = 0;
+
+            streamAddressCB.Items.Add("udp://10.0.0.109:5004");
+            streamAddressCB.Items.Add("udp://10.0.0.113:5004");
+            streamAddressCB.Items.Add("udp://127.0.0.1:5004");
 
             Fullscreen = false;
         }
@@ -63,6 +83,11 @@ namespace SlimDXTest
 
         private void okButton_Click(object sender, EventArgs e)
         {
+            if (streamAddressCB.SelectedIndex >= 0 || streamAddressCB.Text != "")
+            {
+                streamAddress = streamAddressCB.Text;
+                stereoStream = StereoStreamCB.Checked;
+            }
            
             if (leftCameraSelector.SelectedIndex >= 0)
             {

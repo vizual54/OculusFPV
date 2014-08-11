@@ -25,3 +25,6 @@ c:\users\nihogb\documents\visual studio 2013\Projects\SlimDXTest\SlimDXTest\bin\
 c:\users\nihogb\documents\visual studio 2013\Projects\SlimDXTest\SlimDXTest\obj\Debug\SlimDXTest.CameraSelection.resources
 c:\users\nihogb\documents\visual studio 2013\Projects\SlimDXTest\SlimDXTest\bin\Debug\DirectShowLib-2005.dll
 C:\Users\nihogb\Documents\Visual Studio 2013\Projects\SlimDXTest\SlimDXTest\obj\Debug\SlimDXTest.Test.resources
+C:\Users\nihogb\Documents\Visual Studio 2013\Projects\SlimDXTest\SlimDXTest\bin\Debug\FFMpegWrapper.dll
+C:\Users\nihogb\Documents\Visual Studio 2013\Projects\SlimDXTest\SlimDXTest\bin\Debug\FFMpegWrapper.pdb
+C:\Users\nihogb\Documents\Visual Studio 2013\Projects\SlimDXTest\SlimDXTest\bin\Debug\PlainPS.fx

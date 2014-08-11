@@ -28,9 +28,8 @@ namespace SlimDXTest
         private Surface leftImage;
         private Surface rightImage;
         private bool fullscreen = false;
+        private String renderMethod = "";
         private SlimDX.Direct3D9.Font m_font = null;
-        private Camera m_leftCamera = null;
-        private Camera m_rightCamera = null;
         private long elapsed = 0;
         private int countElapsed = 0;
         private float fps = 0f;
@@ -42,22 +41,11 @@ namespace SlimDXTest
             get {return m_Device; }
         }
 
-        public Renderer(Control _control, bool _fullscreen)
-            : this(_control, null, null, _fullscreen)
-        { }
-
-        public Renderer(Control _control, Camera left, Camera right, bool _fullscreen)
+        public Renderer(Control _control, bool _fullscreen, String _renderMethod)
         {
             fullscreen = _fullscreen;
             m_Control = _control;
-            m_leftCamera = left;
-            m_rightCamera = right;
-
-            if (m_leftCamera != null)
-            {
-               // m_leftCamera.FrameComplete += m_leftCamera_FrameComplete;
-            }
-
+            renderMethod = _renderMethod;
             if (m_Device == null)
             {
                 Direct3DEx _d3d = new Direct3DEx();
@@ -121,7 +109,22 @@ namespace SlimDXTest
 
             m_font = new SlimDX.Direct3D9.Font(m_Device, new System.Drawing.Font(FontFamily.GenericSansSerif, 24.0f));
 
-            m_distortionEffect = Effect.FromFile(m_Device, "OculusRiftPS.fx", ShaderFlags.None);
+            switch (renderMethod)
+            {  
+                case "None" :
+                    m_distortionEffect = Effect.FromFile(m_Device, "PlainPS.fx", ShaderFlags.None);
+                    break;
+                case "Oculus":
+                    m_distortionEffect = Effect.FromFile(m_Device, "OculusRiftPS.fx", ShaderFlags.None);
+                    break;
+                case "3DTV":
+                    m_distortionEffect = Effect.FromFile(m_Device, "PlainPS.fx", ShaderFlags.None);
+                    break;
+                default:
+                    throw new Exception("No render method found.");
+                    break;
+            }
+            
 
             //leftImage = Surface.CreateOffscreenPlain(m_Device, 640, 720, Format.A8R8G8B8, Pool.Default);
             //Surface.FromFile(leftImage, ".\\Images\\checkerboardRedGreen.jpg", Filter.None, 0);
@@ -138,7 +141,8 @@ namespace SlimDXTest
             lock (m_csLock)
             {
                 Surface surf = leftTex.GetSurfaceLevel(0);
-                m_Device.StretchRectangle(texture.GetSurfaceLevel(0), surf, TextureFilter.None);
+                //m_Device.StretchRectangle(texture.GetSurfaceLevel(0), surf, TextureFilter.None);
+                leftTex = texture;
                 c1fps = cameraFps;
                 //m_Device.UpdateSurface(texture.GetSurfaceLevel(0), surf);
                 
@@ -151,7 +155,8 @@ namespace SlimDXTest
             lock (m_csLock)
             {
                 Surface surf = rightTex.GetSurfaceLevel(0);
-                m_Device.StretchRectangle(texture.GetSurfaceLevel(0), surf, TextureFilter.None);
+                //m_Device.StretchRectangle(texture.GetSurfaceLevel(0), surf, TextureFilter.None);
+                rightTex = texture;
                 c2fps = cameraFps;
             }
         }
@@ -194,9 +199,20 @@ namespace SlimDXTest
                 //Vertex[] lverts = { new Vertex(0, 0, 1, 0.5f, -1, -a), new Vertex(w / 2, 0, 1, 0.5f, 1, -a), new Vertex(0, h, 1, 0.5f, -1, a), new Vertex(w / 2, h, 1, 0.5f, 1, a) };
                 //Vertex[] rverts = { new Vertex(w / 2, 0, 1, 0.5f, -1, -a), new Vertex(w, 0, 1, 0.5f, 1, -a), new Vertex(w / 2, h, 1, 0.5f, -1, a), new Vertex(w, h, 1, 0.5f, 1, a) };
                 float z = 1.0f;
+
+                Vertex[] lverts = null;
+                Vertex[] rverts = null;
+                //plain
+                if (renderMethod == "None")
+                {
+                    lverts = new Vertex[] { new Vertex(0, 0, z, 0.5f, 0, 0), new Vertex(w, 0, z, 0.5f, 1, 0), new Vertex(0, h, z, 0.5f, 0, 1), new Vertex(w, h, z, 0.5f, 1, 1) };
+                }
+                else
+                {
+                    lverts = new Vertex[] { new Vertex(0, 0, z, 0.5f, 0, 0), new Vertex(w / 2, 0, z, 0.5f, 1, 0), new Vertex(0, h, z, 0.5f, 0, 1), new Vertex(w / 2, h, z, 0.5f, 1, 1) };
+                    rverts = new Vertex[] { new Vertex(w / 2, 0, z, 0.5f, 0, 0), new Vertex(w, 0, z, 0.5f, 1, 0), new Vertex(w / 2, h, z, 0.5f, 0, 1), new Vertex(w, h, z, 0.5f, 1, 1) };
+                }
                 
-                Vertex[] lverts = { new Vertex(0, 0, z, 0.5f, 0, 0), new Vertex(w / 2, 0, z, 0.5f, 1, 0), new Vertex(0, h, z, 0.5f, 0, 1), new Vertex(w / 2, h, z, 0.5f, 1, 1) };
-                Vertex[] rverts = { new Vertex(w / 2, 0, z, 0.5f, 0, 0), new Vertex(w, 0, z, 0.5f, 1, 0), new Vertex(w / 2, h, z, 0.5f, 0, 1), new Vertex(w, h, z, 0.5f, 1, 1) };
                 //Vertex[] vertsices = { new Vertex(0, 0, z, 0.5f, 0, 0), new Vertex(w, 0, z, 0.5f, 1, 0), new Vertex(0, h, z, 0.5f, 0, 1), new Vertex(w, h, z, 0.5f, 1, 1) };
                 m_Device.VertexFormat = VertexFormat.PositionRhw | VertexFormat.Texture1;
                 m_Device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.SelectArg1);
@@ -217,14 +233,19 @@ namespace SlimDXTest
                 EffectHandle scale = m_distortionEffect.GetParameter(null, "Scale");
                 EffectHandle pupilOffset = m_distortionEffect.GetParameter(null, "PupilOffset");
                 */
-                EffectHandle hmdWarpParam = m_distortionEffect.GetParameter(null, "HmdWarpParam");
-                EffectHandle lensCenterOffset = m_distortionEffect.GetParameter(null, "LensCenterOffset");
-                EffectHandle aspectRatio = m_distortionEffect.GetParameter(null, "AspectRatio");
-                EffectHandle scale = m_distortionEffect.GetParameter(null, "Scale");
-
+                EffectHandle hmdWarpParam = null;
+                EffectHandle lensCenterOffset = null;
+                EffectHandle aspectRatio = null;
+                EffectHandle scale = null;
+                if (renderMethod == "Oculus")
+                {
+                    hmdWarpParam = m_distortionEffect.GetParameter(null, "HmdWarpParam");
+                    lensCenterOffset = m_distortionEffect.GetParameter(null, "LensCenterOffset");
+                    aspectRatio = m_distortionEffect.GetParameter(null, "AspectRatio");
+                    scale = m_distortionEffect.GetParameter(null, "Scale");
+                }
                 
                 //m_font.DrawString(null, "Hello", 200+640, 200, Color.White);
-
                 for (int j = 0; j < 2; j++)
                 {
                     Vertex[] verts;
@@ -233,15 +254,18 @@ namespace SlimDXTest
                     {
                         verts = lverts;
                         m_Device.SetTexture(0, leftTex);
+                        if (renderMethod == "None")
+                            j++;
                     }
                     else
                     {
                         verts = rverts;
-                        m_Device.SetTexture(0, rightTex);
+                        m_Device.SetTexture(0, leftTex);
+                        //m_Device.SetTexture(0, rightTex);
                     }
                     
                     //verts = vertsices;
-                    float texCoordOffsetValue = ((j == 0) ^ !!m_swap) ? 0.0f : 0.5f;
+                    //float texCoordOffsetValue = ((j == 0) ^ !!m_swap) ? 0.0f : 0.5f;
                     //Vector4 scaleMat = (j == 0) ? (new Vector4(0.0f, -1.0f, 1.0f, 0.0f)) : (new Vector4(0.0f, 1.0f, -1.0f, 0.0f));
                     Vector4 scaleMat = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
                     float pupilOffsetValue = (j == 0) ? m_pupilOffset : -m_pupilOffset;
@@ -258,10 +282,13 @@ namespace SlimDXTest
                         m_distortionEffect.SetValue(aspectRatio, aspectRatioValue);
                         m_distortionEffect.SetValue(pupilOffset, pupilOffsetValue);
                         */
-                        m_distortionEffect.SetValue(hmdWarpParam, new Vector4(1.0f, 0.22f, 0.24f, 0.0f));
-                        m_distortionEffect.SetValue(lensCenterOffset, lensCenterOffsetValue);
-                        m_distortionEffect.SetValue(scale, new Vector2(m_scale, m_scale));
-                        m_distortionEffect.SetValue(aspectRatio, aspectRatioValue);
+                        if (renderMethod == "Oculus")
+                        {
+                            m_distortionEffect.SetValue(hmdWarpParam, new Vector4(1.0f, 0.22f, 0.24f, 0.0f));
+                            m_distortionEffect.SetValue(lensCenterOffset, lensCenterOffsetValue);
+                            m_distortionEffect.SetValue(scale, new Vector2(m_scale, m_scale));
+                            m_distortionEffect.SetValue(aspectRatio, aspectRatioValue);
+                        }
                         m_Device.DrawUserPrimitives<Vertex>(PrimitiveType.TriangleStrip, 2, verts);
                         m_font.DrawString(null, "Scale: " + m_scale.ToString(), 0, 0, Color.Green);
                         m_font.DrawString(null, "Lens Offset: " + m_lensCenterOffset.ToString(), 0, 50, Color.Green);
